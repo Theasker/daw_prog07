@@ -1,5 +1,6 @@
 package EditorTexto;
 
+import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,7 +41,7 @@ class MiVentana extends JFrame implements ActionListener {
        setSize(600, 600);
        panel = new JPanel();//crear un JPanel para almacenar los componentes
        setContentPane(panel);//establecer nuestro JPanel como el panel por defecto de la ventana
-       panel.setLayout(null);//así nosotros le decimos "donde" colocar cada componente
+       panel.setLayout(new BorderLayout());//así nosotros le decimos "donde" colocar cada componente
 
        barraMenus = new JMenuBar();//crear la barra de menus
        barraMenus.setSize(600, 20);//darle tamaño
@@ -93,7 +94,6 @@ class MiVentana extends JFrame implements ActionListener {
                }
            }
        }
-
        //aqui iria el código para más items del menu Archivo, del menu Editar etc
    }
 }
