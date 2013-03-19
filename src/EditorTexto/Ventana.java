@@ -20,6 +20,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Ventana extends JFrame implements ActionListener{
 
+  File fich;
+  
   JPanel panel;
   JMenuBar barraMenus;
   JMenu menuArchivo;
@@ -116,6 +118,7 @@ public class Ventana extends JFrame implements ActionListener{
       eventoSalir();
     }
   }
+  
   private void eventoAbrir(){
     int seleccion = sel.showDialog(this, "Abrir Fichero");
     if(seleccion == JFileChooser.APPROVE_OPTION){//si la opcion que ha escogido el usuario es Abrir Fichero
@@ -137,22 +140,27 @@ public class Ventana extends JFrame implements ActionListener{
     }
   }
   private void eventoNuevo() {
-    if (!"".equals(cajaTexto.getText())){
-      final JOptionPane optionPane = new JOptionPane(
-              "¿Quieres guardar los cambios?",
-              JOptionPane.QUESTION_MESSAGE,
-              JOptionPane.YES_NO_OPTION);
+    // Si la caja de texto es visible, significa que ya se había activado 
+    // de alguna manera la cajaTexto por lo que ya se puede guardar, se haya
+    // seleccionado un fichero o no.
+    if (cajaTexto.isVisible()){ 
+      eventoGuardar();
     }
+    fich = null;// Al hacer nuevo aun no hemos elegido fichero para guardar.
     cajaTexto.setVisible(true);
     cajaTexto.setText("");
   }
   private void eventoGuardar() {
-    JOptionPane.showMessageDialog(this, "Eggs are not supposed to be green.");
+    // Significa que no se ha guardado aún el fichero
+    // y no hay asignado ningún fichero
+    if (fich == null) 
+      eventoGuardarComo();
+    else guardar(fich);
   }
   private void eventoGuardarComo() {
     int seleccion = sel.showSaveDialog(this);
     if (seleccion == JFileChooser.APPROVE_OPTION){
-      File fich = sel.getSelectedFile(); // Guardamos el fichero seleccionado o escrito
+      fich = sel.getSelectedFile(); // Guardamos el fichero seleccionado o escrito
       if (fich.exists()){
         int n = JOptionPane.showConfirmDialog(this,
                 "¿Te gustaría sobreescribir el fichero?",
@@ -166,13 +174,15 @@ public class Ventana extends JFrame implements ActionListener{
     }
   }
   private void eventoSalir() {
+    eventoGuardar();
     System.exit(0);
   }
   private void guardar(File fich){
+    String texto = cajaTexto.getText();
     try{
       FileWriter fw = new FileWriter(fich);
-      String temp = cajaTexto.getText();
-      fw.write(temp);
+      fw.write(texto);
+      fw.close();
     }catch (IOException ioe){
       System.err.println("Error de entrada/salida");
     }
