@@ -1,8 +1,10 @@
 package EditorTexto;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -15,34 +17,47 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultEditorKit;
 
 public class Ventana extends JFrame implements ActionListener{
 
   File fich;
   
+  JTextArea cajaTexto;
+  
   JPanel panel;
   JMenuBar barraMenus;
-  JMenu menuArchivo;
-  JMenuItem itemNuevo;
-  JMenuItem itemAbrir;
-  JMenuItem itemGuardar;
-  JMenuItem itemGuardarComo;
-  JMenuItem itemSalir;
-  JTextArea cajaTexto;
+  
+  JMenu menuArchivo,menuEdicion;
+  JMenuItem itemNuevo, itemAbrir,itemGuardar,itemGuardarComo,itemSalir;
+  JMenuItem itemCortar,itemCopiar,itemPegar;
   
   JFileChooser sel;
   FileNameExtensionFilter filtro;
   
   public Ventana(String titulo){
     super.setTitle(titulo);
+    iniciarLookAndFeel();
     iniciarContenedores();
     iniciarMenus();
+    iniciarMnemotecnicos();
     iniciarCajaTexto();
     seleccionarFichero();
     añadirListeners();
     setVisible(true);
+  }
+  private void iniciarLookAndFeel(){
+    try{
+      String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
+      UIManager.setLookAndFeel(lookAndFeel);
+    } catch (Exception e) {
+      System.err.println("Error");
+    }
   }
   private void iniciarContenedores() {
     // Configuraciones generales
@@ -63,24 +78,60 @@ public class Ventana extends JFrame implements ActionListener{
     // Creamos el menú Archivo
     menuArchivo = new JMenu("Archivo");
     barraMenus.add(menuArchivo); // Añadimos el menuArchivo a la barraMenus
+    
     itemNuevo = new JMenuItem("Nuevo");
     menuArchivo.add(itemNuevo);
+    menuArchivo.add(new JSeparator());
     itemAbrir = new JMenuItem("Abrir archivo..."); // Creamos la primera entrada de menú
     menuArchivo.add(itemAbrir);
     itemGuardar = new JMenuItem("Guardar");
     menuArchivo.add(itemGuardar);
     itemGuardarComo = new JMenuItem("Guardar Como...");
     menuArchivo.add(itemGuardarComo);
+    menuArchivo.add(new JSeparator());
     itemSalir = new JMenuItem("Salir");
     menuArchivo.add(itemSalir);   
     
+    menuEdicion = new JMenu("Edicion");
+    barraMenus.add(menuEdicion); // Añadimos el menuEdicion a la barraMenus
+    itemCortar = new JMenuItem(new DefaultEditorKit.CutAction());
+    itemCortar.setText("Cortar");
+    menuEdicion.add(itemCortar);
+    itemCopiar = new JMenuItem(new DefaultEditorKit.CopyAction());
+    itemCopiar.setText("Copiar");
+    menuEdicion.add(itemCopiar);
+    itemPegar = new JMenuItem(new DefaultEditorKit.PasteAction());
+    itemPegar.setText("Pegar");
+    menuEdicion.add(itemPegar);
+  }
+  private void iniciarMnemotecnicos(){
+        menuArchivo.setMnemonic(KeyEvent.VK_A);
+        menuEdicion.setMnemonic(KeyEvent.VK_E);
+        itemNuevo.setMnemonic(KeyEvent.VK_N);
+        itemNuevo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK));
+        itemAbrir.setMnemonic(KeyEvent.VK_A);
+        itemAbrir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.ALT_MASK));
+        itemGuardar.setMnemonic(KeyEvent.VK_G);
+        itemGuardar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.ALT_MASK));
+        itemGuardarComo.setMnemonic(KeyEvent.VK_Q);
+        itemGuardarComo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.ALT_MASK));
+        itemSalir.setMnemonic(KeyEvent.VK_C);
+        itemSalir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        itemCortar.setMnemonic(KeyEvent.VK_C);
+        itemCortar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+        itemCopiar.setMnemonic(KeyEvent.VK_O);
+        itemCopiar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        itemPegar.setMnemonic(KeyEvent.VK_P);
+        itemPegar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
   }
   private void iniciarCajaTexto() {
     // Creación del área de Texto
     cajaTexto = new JTextArea();
-    cajaTexto.setLocation(25,25);
-    cajaTexto.setSize(630,450);
+    cajaTexto.setLocation(125,125);
+    cajaTexto.setSize(100,100);
     cajaTexto.setVisible(false);
+    // Asigno un tipo de fuente al cuadro de texto
+    cajaTexto.setFont(new Font("Courier New", Font.PLAIN,12));
     panel.add(cajaTexto,BorderLayout.CENTER); // Añadimos la caja de texto al panel
   }
   private void seleccionarFichero(){
@@ -97,7 +148,9 @@ public class Ventana extends JFrame implements ActionListener{
     itemGuardar.addActionListener(this);
     itemGuardarComo.addActionListener(this);
     itemSalir.addActionListener(this);
-    
+    itemCortar.addActionListener(this);
+    itemCopiar.addActionListener(this);
+    itemPegar.addActionListener(this);
   }
   
   @Override
@@ -116,7 +169,7 @@ public class Ventana extends JFrame implements ActionListener{
     }
     if(evento.getSource() == itemSalir){// se ha seleccionado Salir en el menú
       eventoSalir();
-    }
+    }    
   }
   
   private void eventoAbrir(){
@@ -174,7 +227,12 @@ public class Ventana extends JFrame implements ActionListener{
     }
   }
   private void eventoSalir() {
-    eventoGuardar();
+    int n = JOptionPane.showConfirmDialog(this,
+                "¿Te gustaría guardar el fichero?",
+                "Guardar",JOptionPane.YES_NO_OPTION);  
+    if (n == 0){
+      eventoGuardar();
+    }
     System.exit(0);
   }
   private void guardar(File fich){
