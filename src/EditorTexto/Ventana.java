@@ -48,7 +48,7 @@ public class Ventana extends JFrame implements ActionListener{
     iniciarMnemotecnicos();
     iniciarCajaTexto();
     seleccionarFichero();
-    añadirListeners();
+    aniadirListeners();
     setVisible(true);
   }
   private void iniciarLookAndFeel(){
@@ -141,7 +141,7 @@ public class Ventana extends JFrame implements ActionListener{
     //de archivo tenga la opción de sólo ver archivos de texto plano y todos los archivos.
     sel.setFileFilter(filtro); // Asignamos el filtro al JFileChooser
   }
-  private void añadirListeners() {
+  private void aniadirListeners() {
     // añado los objetos listener a tods las opcionesy botones
     itemNuevo.addActionListener(this);
     itemAbrir.addActionListener(this);
